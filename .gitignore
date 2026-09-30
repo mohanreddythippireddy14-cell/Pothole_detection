@@ -1,0 +1,28 @@
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Ultralytics & Hugging Face Caches
+*.pt
+!checkpoints/
+data/
+datasets/
+cache/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+
+# OS Files
+.DS_Store
+
+# Temporary outputs
+scratch/

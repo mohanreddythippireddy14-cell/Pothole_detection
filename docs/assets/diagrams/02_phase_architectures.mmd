@@ -1,0 +1,29 @@
+flowchart LR
+    %% Styling
+    classDef phase1 fill:#ffebee,stroke:#c62828,stroke-width:2px;
+    classDef phase2 fill:#e8eaf6,stroke:#283593,stroke-width:2px;
+    classDef component fill:#fff,stroke:#333,stroke-width:1px;
+
+    subgraph P1 [Phase 1: Bounding Box Baseline]
+        direction LR
+        A1([🖼️ RGB Image]):::component --> B1[🧠 YOLOv8n Object Det.]:::phase1
+        B1 --> C1[🟦 Bounding Box]:::component
+        C1 --> D1[⚠️ Box-Based Severity]:::phase1
+    end
+
+    subgraph P2 [Phase 2: Segmentation & Depth Evolution]
+        direction LR
+        A2([🖼️ RGB Image]):::component --> B2[🧠 YOLOv8n Object Det.]:::phase2
+        B2 --> C2[🟦 Bounding Box]:::component
+        C2 --> D2[✂️ Crop + Pad]:::component
+        D2 --> E2[🎨 YOLOv8n-Seg]:::phase2
+        E2 --> F2[💠 Pixel Mask]:::component
+        
+        A2 -.-> G2[📏 Depth-Anything-V2]:::phase2
+        G2 -.-> H2[🗺️ Depth Map]:::component
+        
+        F2 --> I2[🎯 Masking / Overlay]:::component
+        H2 -.-> I2
+        I2 --> J2[📊 Mask + Depth Feature Vector]:::component
+        J2 --> K2[⚙️ ASTM D6433 Severity Engine]:::phase2
+    end
