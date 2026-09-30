@@ -1,0 +1,27 @@
+PothRGBD location: /media/adityapachauri/second_drive/pothole_detection_data/cache/kagglehub/datasets/mahyeks/pothrgbd-rgb-and-depth-images-of-potholes/versions/1
+Exists: True
+
+FILE TYPE COUNTS
+.jpg      : 1000
+.npy      : 1000
+.txt      : 1000
+
+RGB-like files: 1000
+Depth candidates: 1000
+TXT annotation files: 1000
+
+RGB<->DEPTH MATCHING (by timestamp)
+Matched pairs: 1000
+Unmatched RGB: 0
+
+RGB<->SEGMENTATION-TXT MATCHING (by stem)
+Matched pairs: 1000
+
+RGB<->DEPTH<->SEG-TXT triple matches: 1000
+
+Sample depth array: 20250227_135438_depth.npy shape (480, 640) dtype uint16
+min/max/mean: 0.0 1470.0 1097.7242122395833
+valid(>0) pixels: 289012 of 307200 (94.1%)
+
+Sample seg-txt: 20250227_135438_color_png.rf.984e9768eb679052fd79e702413a94c5.txt
+n values: 85 -> class_id= 0 n_points= 42

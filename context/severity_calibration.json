@@ -1,0 +1,13 @@
+{
+  "area_threshold_low_medium": 0.020791781752265533,
+  "area_threshold_medium_high": 0.10302537022148821,
+  "area_calibration_balanced_accuracy": 0.5248653525308874,
+  "area_calibration_overall_accuracy": 0.47932131495228,
+  "area_calibration_n_boxes": 1886,
+  "area_calibration_source": "idanbaru/annotated-potholes-with-severity-levels",
+  "depth_steepness_escalation_threshold": 0.003807903574804734,
+  "depth_steepness_p75_reference": 0.0029736318169212655,
+  "depth_steepness_median_reference": 0.002419944449420615,
+  "depth_calibration_n_samples": 59,
+  "depth_calibration_source": "mahyeks/pothrgbd-rgb-and-depth-images-of-potholes"
+}

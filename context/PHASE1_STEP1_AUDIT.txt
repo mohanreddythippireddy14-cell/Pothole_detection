@@ -1,0 +1,120 @@
+Dataset downloaded to: /media/adityapachauri/second_drive/pothole_detection_data/cache/kagglehub/datasets/andrewmvd/pothole-detection/versions/1
+Exists: True Is dir: True
+
+FILE TYPE SUMMARY
+.png            665
+.xml            665
+
+Total images: 665
+Valid images: 665
+Corrupt images: 0
+
+Width stats:
+ count    665.000000
+mean     427.787970
+std       58.213761
+min      300.000000
+25%      400.000000
+50%      400.000000
+75%      450.000000
+max      600.000000
+Name: width, dtype: float64
+
+Height stats:
+ count    665.000000
+mean     344.225564
+std       56.354250
+min      140.000000
+25%      300.000000
+50%      300.000000
+75%      400.000000
+max      533.000000
+Name: height, dtype: float64
+
+MOST COMMON RESOLUTIONS (top 20)
+width  height
+400    400       285
+       300        63
+450    300        55
+533    300        51
+451    300        13
+534    300        11
+300    400        11
+449    300         8
+600    300         6
+453    300         6
+480    300         6
+300    300         6
+571    300         5
+452    300         5
+401    300         5
+425    300         3
+455    300         3
+544    300         3
+464    300         3
+447    300         3
+
+Annotation files found: 665
+
+Total annotated objects: 1740
+
+CLASS DISTRIBUTION
+class
+pothole    1740
+
+BOUNDING BOX STATISTICS
+
+Pixel width:
+ count    1740.000000
+mean      108.038506
+std        90.313824
+min         0.000000
+25%        45.750000
+50%        80.000000
+75%       137.000000
+max       539.000000
+Name: box_width, dtype: float64
+
+Pixel height:
+ count    1740.000000
+mean       55.093678
+std        48.618569
+min         1.000000
+25%        20.000000
+50%        40.000000
+75%        74.000000
+max       298.000000
+Name: box_height, dtype: float64
+
+Relative width:
+ count    1740.000000
+mean        0.251210
+std         0.198203
+min         0.000000
+25%         0.106914
+50%         0.191453
+75%         0.325000
+max         0.998148
+Name: relative_width, dtype: float64
+
+Relative height:
+ count    1740.000000
+mean        0.166332
+std         0.153443
+min         0.003333
+25%         0.060000
+50%         0.120000
+75%         0.210000
+max         0.946667
+Name: relative_height, dtype: float64
+
+Relative area:
+ count    1740.000000
+mean        0.066365
+std         0.116469
+min         0.000000
+25%         0.007154
+50%         0.021415
+75%         0.066319
+max         0.852298
+Name: relative_area, dtype: float64
