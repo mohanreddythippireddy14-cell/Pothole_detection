@@ -1,9 +1,38 @@
+# Core ML & Deep Learning
 torch>=2.0.0
 torchvision>=0.15.0
+torchaudio>=2.0.0
+tensorboard>=2.10.0
+
+# Object Detection & Segmentation
 ultralytics>=8.0.0
+
+# Depth Estimation
 transformers>=4.30.0
-opencv-python>=4.8.0
+onnx>=1.14.0
+onnxruntime>=1.15.0
+
+# Data Processing & Scientific Computing
 numpy>=1.23.0
-Pillow>=9.0.0
 pandas>=2.0.0
+opencv-python>=4.8.0
+scipy>=1.10.0
+Pillow>=9.0.0
+matplotlib>=3.7.0
+yaml>=6.0.0
+
+# Machine Learning Utilities
+scikit-learn>=1.2.0
+
+# Kaggle Dataset Integration
 kagglehub>=0.2.0
+
+# Notebook / Interactive Use
+jupyter>=1.0.0
+jupyterlab>=4.0.0
+
+# Development
+black>=23.0.0
+flake8>=6.0.0
+pytest>=7.0.0
+
