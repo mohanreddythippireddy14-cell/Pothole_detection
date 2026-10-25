@@ -2,27 +2,127 @@
 .venv/
 venv/
 env/
+ENV/
+env.bak/
+.venv.bak/
 
 # Python caches
 __pycache__/
 *.py[cod]
 *$py.class
-.pytest_cache/
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*~
+.DS_Store
+.project
+.pydevproject
+*.ipynb_checkpoints/
+
+# Jupyter Notebook
+*.ipynb_checkpoints
+
+# Model Weights & Checkpoints (track checkpoints/ folder, ignore individual .pt files)
+*.pt
+*.pth
+*.onnx
+__pycache__/
+
+# Training Outputs
+runs/
+checkpoints/*.pt
+checkpoints/*.pth
+weights/*.pt
+weights/*.pth
+logs/
+output/
+outputs/
+results.csv
+results.png
+metrics.json
+*.log
 
 # Ultralytics & Hugging Face Caches
-*.pt
+wandb/
+.ultralytics/
+*.json
 !checkpoints/
 data/
 datasets/
 cache/
+!data/.gitkeep
+!datasets/.gitkeep
+!cache/.gitkeep
 
-# IDEs
-.idea/
-.vscode/
+# Documentation artifacts
+*.pdf
+*.docx
+*.xlsx
+phase1_eval_plots/
+phase2_seg_eval_plots/
+phase2_pipeline_demo/
+phase1_v2_eval_on_v1test/
+phase2_random10_demo/
+context/*.png
+context/*.csv
+phase1_training_curves.png
+phase2_seg_training_curves.png
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# System
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Test / Coverage
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.pytest_cache/
+
+# Temporary files
+*.tmp
+*.bak
 *.swp
+*~
 
-# OS Files
-.DS_Store
-
-# Temporary outputs
+# Scratch workspace
 scratch/
+
+# Kaggle credentials
+.kaggle/kaggle.json
+
+
+# Kaggle credentials
+.kaggle/kaggle.json
+
