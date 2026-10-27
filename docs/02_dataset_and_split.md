@@ -1,62 +1,29 @@
-# 02. Dataset Curation and Strict Splitting
+# 02. Dataset Curation and Splitting
 
-## The Low Recall Problem
-Initial baseline testing (Phase 1 v1) using a standard 665-image dataset yielded high precision but abysmal recall (0.66). The model was overly conservative, missing 34% of real-world potholes due to insufficient lighting and environmental diversity in the training distribution.
+## v1 baseline
+`andrewmvd/pothole-detection`: 665 images (~400×300), VOC boxes, converted to YOLO and split 80/10/10 (532 / 66 / 67, seed 42) by `scripts/02`. One zero-width box was dropped. Recall was the weak point (0.68 on the test split).
 
-## Dataset Merging
-To resolve this, we aggregated four disparate public datasets:
-1. **andrewmvd/pothole-detection** (Pascal VOC format)
-2. **v2-2022 Pothole Dataset** (YOLO format)
-3. **RDD2022** (Filtering strictly for class `D40` - potholes)
-4. **PothRGBD** (Providing mask polygons)
+## v2 merged detection dataset (`scripts/11`)
+| Source | Kept | How it was merged |
+|---|---|---|
+| chitholian | 665 | Same photos as andrewmvd, at 720×720. Matched 665/665 with a 16×16 grayscale similarity check and **replaces** andrewmvd. |
+| rajdalsaniya | 671 | 2,083 Roboflow-augmented files grouped by original photo; one image kept per group to avoid near-duplicates across folds. A 60-image sample showed no overlap with chitholian. |
+| banilkumar "Normal" | 650 | Pothole-free road images with empty labels (background), so false positives are measured. Its "Pothole" folder has no boxes and is excluded. |
 
-All datasets were normalized to standard YOLO object/segmentation format, mapping the target class universally to ID `0`. Deduplication via hash-based similarity yielded a final curated corpus of **2,083 images**.
+**Total: 1,986 images** (1,336 annotated + 650 background).
 
-## Strict Evaluation Protocol
-To prevent data leakage and ensure unbiased quantitative evaluation:
-- **70% Training (~1,458 images):** Used exclusively for model gradient updates and augmentations.
-- **15% Validation (~312 images):** Used strictly for hyperparameter tuning and early stopping.
-- **15% Held-out Test (~313 images):** Locked away until final evaluation.
-
+## Evaluation protocol (as implemented)
 ```mermaid
 flowchart TD
-    %% Styling
-    classDef ds fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
-    classDef script fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
-    classDef split fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
-    classDef result fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-
-    subgraph Data Sources
-        direction LR
-        DS1[(andrewmvd)]:::ds
-        DS2[(v2-2022)]:::ds
-        DS3[(RDD2022)]:::ds
-        DS4[(PothRGBD)]:::ds
-    end
-
-    subgraph Data Cleaning & Parsing
-        direction LR
-        DS1 --> CP[⚙️ Parse XML to YOLO txt]:::script
-        DS2 --> CP2[⚙️ Map 'pothole' string to ID 0]:::script
-        DS3 --> CP3[⚙️ Filter subset: D40 labels only]:::script
-        DS4 --> CP4[⚙️ Format mask polygons]:::script
-    end
-
-    CP --> MERGE[🔄 Deduplication & Merge]:::script
-    CP2 --> MERGE
-    CP3 --> MERGE
-    
-    MERGE --> SPLIT{Strict 70/15/15 Split}:::split
-    
-    SPLIT -->|70%| TRAIN[(Training Set)]:::result
-    SPLIT -->|15%| VAL[(Validation Set)]:::result
-    SPLIT -->|15%| TEST[(Held-out Test Set)]:::result
-    
-    TRAIN -.->|⛔ No Leakage| TEST
-    VAL -.->|⛔ No Leakage| TEST
-    
-    TRAIN --> MODEL[🧠 YOLO Fine-Tuning]:::script
-    VAL --> MODEL
-    TEST --> EVAL[📊 Unbiased Quantitative Evaluation]:::result
-
+    P[(1,986-image pool)] --> K[5-fold CV - scripts/12]
+    K --> M[Per-fold mAP, mean ± std]
+    P --> F[90/10 split - scripts/13]
+    F --> FM[Final model checkpoint]
 ```
+- **5-fold cross-validation** gives the reported score (mAP@50 0.731 ± 0.010). The same fold is used for best-checkpoint selection and scoring, so it is slightly optimistic.
+- The **final model** trains on 90% of the pool, with 10% for validation and early stopping.
+- **There is no untouched test set for v2.** Evaluating v2 on the v1 test split is invalid, because those photos (as chitholian copies) are in the v2 pool.
+
+## Known risks
+- banilkumar is an *augmented* dataset; augmented copies of the same background photo may sit in different folds.
+- See `FUTURE_ACTIONS.md` for the planned group-aware held-out test split.

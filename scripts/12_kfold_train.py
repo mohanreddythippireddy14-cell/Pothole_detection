@@ -22,7 +22,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import _py311_compat  # noqa: F401
-from config import DATASETS_DIR, RUNS_DIR, CHECKPOINTS_DIR, CONTEXT_DIR  # noqa: E402
+from config import DATASETS_DIR, RUNS_DIR, CHECKPOINTS_DIR, CONTEXT_DIR, ensure_dirs  # noqa: E402
+from fs_utils import link_or_copy  # noqa: E402
 
 import numpy as np
 import yaml
@@ -50,8 +51,8 @@ def build_fold_dirs(manifest: list[str], k: int, seed: int) -> list[Path]:
             for stem in manifest[idx]:
                 img_src = next((COMBINED_DIR / "images").glob(f"{stem}.*"))
                 lbl_src = COMBINED_DIR / "labels" / f"{stem}.txt"
-                (fold_dir / "images" / split / img_src.name).symlink_to(img_src)
-                (fold_dir / "labels" / split / lbl_src.name).symlink_to(lbl_src)
+                link_or_copy(img_src, fold_dir / "images" / split / img_src.name)
+                link_or_copy(lbl_src, fold_dir / "labels" / split / lbl_src.name)
 
         data_yaml = fold_dir / "data.yaml"
         with open(data_yaml, "w") as f:
@@ -68,6 +69,7 @@ def build_fold_dirs(manifest: list[str], k: int, seed: int) -> list[Path]:
 
 
 def main():
+    ensure_dirs()
     parser = argparse.ArgumentParser()
     parser.add_argument("--k", type=int, default=5)
     parser.add_argument("--epochs", type=int, default=60)

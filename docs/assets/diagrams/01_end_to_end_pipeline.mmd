@@ -19,7 +19,7 @@ flowchart TD
         E --> F[🎨 YOLOv8n-Seg Instance Segmentation]:::model
         F --> G[💠 Extract Binary Pothole Mask]:::process
         
-        A -.-> H[📏 Depth-Anything-V2 Monocular Depth]:::model
+        E --> H[📏 Depth-Anything-V2 on each crop]:::model
         H --> I[🗺️ Continuous Relative Depth Map]:::process
         
         G --> J[🎯 Overlay Mask on Depth Map]:::process
@@ -33,4 +33,4 @@ flowchart TD
         M -->|Low / Medium / High| N[🏷️ Annotate Output Frame]:::process
     end
     
-    N --> O[(📊 Push to Admin Dashboard)]:::output
+    N -.->|planned| O[(📊 Municipal dashboard)]:::output

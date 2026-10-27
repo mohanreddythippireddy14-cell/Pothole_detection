@@ -1,3 +1,5 @@
+> **CORRECTION (2026-10-27):** the v2 "v1 test set" numbers below (mAP@50 0.95, recall 0.86) are **not valid**. The v1 test photos are part of the v2 training pool (chitholian contains the same 665 photos as andrewmvd), so the model had seen them. Use the 5-fold CV result (mAP@50 0.731 ± 0.010) until a clean held-out evaluation is done. See `FUTURE_ACTIONS.md`.
+
 # Pothole Detection & Severity Estimation
 
 **Origin**: ported from a Google Colab notebook (`pothole_detection (1).py`) + handwritten
@@ -8,7 +10,7 @@ logged in `context/`.
 ## Storage layout (root disk only has ~2.2GB free — DO NOT write datasets/checkpoints there)
 
 All datasets, model checkpoints, and training runs live on the second drive:
-`/media/adityapachauri/second_drive/pothole_detection_data/`
+`$POTHOLE_DATA_ROOT/`
 ```
 pothole_detection_data/
 ├── datasets/     # kagglehub-downloaded datasets (raw)
@@ -19,7 +21,7 @@ pothole_detection_data/
 ```
 This is a scratch/experiment area — datasets get deleted after training+validation is
 complete and results are documented (per user instruction). Code, configs, and docs live
-in `/home/adityapachauri/Pothole_detection/` (this repo) which stays on root but is small
+in `the repository root (`Pothole_detection/`)` (this repo) which stays on root but is small
 (no large binaries checked in).
 
 ## Architecture (from notes, see context/ARCHITECTURE.md)
@@ -72,7 +74,7 @@ ASTM D6433 (the real pavement-engineering pothole-severity standard). Area thres
 calibrated against a real severity-labeled dataset found on Kaggle
 (`idanbaru/annotated-potholes-with-severity-levels`); depth-escalation threshold
 calibrated from PothRGBD. See `context/SEVERITY_FUNCTION.md`. Full session history:
-`CHANGELOG.md`. Handwritten notes verbatim transcription:
+`docs/archive/CHANGELOG.md`. Handwritten notes verbatim transcription:
 `context/HANDWRITTEN_NOTES_TRANSCRIPTION.md`.
 
 **Not yet done**: fine-tuning Depth-Anything-V2 on PothRGBD; broadening segmentation
@@ -80,7 +82,7 @@ training data beyond PothRGBD's 2 capture dates; end-to-end severity accuracy
 measurement (only the area-factor-in-isolation was measured against idanbaru).
 
 **Cleanup reminder (per user instruction)**: datasets on the second drive
-(`/media/adityapachauri/second_drive/pothole_detection_data/datasets/`,
+(`$POTHOLE_DATA_ROOT/datasets/`,
 `cache/kagglehub/`) should be deleted once all training/validation is finished and
 results are confirmed satisfactory — checkpoints and context/ docs are the durable
 artifacts, the raw datasets are not.

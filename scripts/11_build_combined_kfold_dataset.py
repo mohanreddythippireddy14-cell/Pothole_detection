@@ -46,7 +46,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import _py311_compat  # noqa: F401
-from config import KAGGLEHUB_CACHE, DATASETS_DIR, CONTEXT_DIR  # noqa: E402
+from config import KAGGLEHUB_CACHE, DATASETS_DIR, CONTEXT_DIR, ensure_dirs  # noqa: E402
 
 os.environ.setdefault("KAGGLEHUB_CACHE", str(KAGGLEHUB_CACHE))
 
@@ -97,6 +97,7 @@ def roboflow_base_stem(p: Path) -> str:
 
 
 def main():
+    ensure_dirs()
     print("Resolving source datasets (uses kagglehub cache if already present)...")
     andrewmvd_root = Path(kagglehub.dataset_download("andrewmvd/pothole-detection"))
     chit_root = Path(kagglehub.dataset_download("chitholian/annotated-potholes-dataset"))

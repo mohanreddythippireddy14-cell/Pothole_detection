@@ -1,12 +1,11 @@
-"""Compat shim: the system python3.11 is an incomplete pre-release build
-(reports itself as 3.11.0rc1) that predates PEP-related sys.set_int_max_str_digits
-/ sys.get_int_max_str_digits landing in the final 3.11.0. torch._dynamo's polyfill
-loader references sys.get_int_max_str_digits unconditionally at import time and
-crashes with AttributeError without it. Stub it with the real CPython 3.11+
-default (4300) before torch is imported anywhere.
+"""Compat shim for broken pre-release Python 3.11 builds (e.g. 3.11.0rc1).
 
-Import this module first, before torch/ultralytics, in any script that trains
-or runs a model.
+Some pre-release 3.11 builds lack sys.get_int_max_str_digits /
+sys.set_int_max_str_digits, which torch._dynamo references at import time. On such a
+build this stubs both with CPython's real default (4300). On any normal Python
+(3.10, or 3.11.0+) the functions already exist and this module does nothing.
+
+Import it before torch/ultralytics in scripts that train or run a model.
 """
 
 import sys

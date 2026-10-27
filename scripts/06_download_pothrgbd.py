@@ -12,7 +12,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import _py311_compat  # noqa: F401
-from config import KAGGLEHUB_CACHE, CONTEXT_DIR  # noqa: E402
+from config import KAGGLEHUB_CACHE, CONTEXT_DIR, ensure_dirs  # noqa: E402
 
 os.environ.setdefault("KAGGLEHUB_CACHE", str(KAGGLEHUB_CACHE))
 
@@ -30,6 +30,7 @@ def extract_timestamp(path: Path):
 
 
 def main():
+    ensure_dirs()
     log_lines = []
 
     def log(*args):

@@ -1,23 +1,25 @@
 # 09. Reproducing Results
 
-## Environment Setup
-1. Clone the repository.
-2. Initialize the virtual environment:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   ```
-
-## Running the Pipeline
-To execute the end-to-end Phase 3 pipeline on sample images:
+## Environment
 ```bash
-python scripts/10_full_pipeline.py \
-    --images docs/assets/samples/potholes103_raw.png \
-    --out-dir outputs/ \
-    --no-depth
+python -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
 ```
-*(Note: Remove `--no-depth` to execute the heavy Depth-Anything-V2 branch. Requires CUDA).*
+Set `POTHOLE_DATA_ROOT` to store datasets outside the repo. Kaggle downloads need Kaggle API credentials.
 
-## Sample Outputs
-See `docs/assets/diagrams/05_inference_example.md` for a visual comparison of inputs to pipeline outputs.
+## Running the pipeline
+Put `yolov8n_pothole_v2_final_best.pt` and `yolov8n_seg_pothrgbd_best.pt` in `checkpoints/` (from the Releases page, or train them), then:
+```bash
+python scripts/10_full_pipeline.py --images docs/assets/samples/potholes103_raw.png --out-dir outputs/
+```
+Add `--no-depth` to skip Depth-Anything-V2 (faster; severity from size only). Both modes run on CPU; a GPU is faster.
+
+## Training order
+`01 → 02 → 03 → 04` (v1 detector) · `06 → 07 → 08` (segmenter) · `09` (depth check) · `11 → 12 → 13` (v2 detector) · `14` (severity calibration). Full table in the main README.
+
+## Tests
+```bash
+pip install -r requirements-dev.txt
+pytest
+```

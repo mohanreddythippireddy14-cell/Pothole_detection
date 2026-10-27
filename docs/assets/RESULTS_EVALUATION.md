@@ -1,32 +1,22 @@
 # Pipeline Evaluation & Results
 
-## Evaluation Protocol
-- **Framework:** Ultralytics YOLOv8 natively logged evaluation metrics.
-- **Metric Definitions:** 
-  - `mAP@50`: Mean Average Precision at 0.50 Intersection over Union (IoU). Measures general detection capability.
-  - `mAP@50:95`: Mean Average Precision averaged across IoU thresholds from 0.50 to 0.95. Measures localization tightness (how perfectly the box/mask traces the pothole).
-  - `Recall`: The percentage of actual ground-truth potholes the model successfully found.
-- **Protocol Flag ⚠️:** The evaluation dataset changed between Phase 1 v1 and Phase 1 v2. Phase 1 v1 was tested on a 66-image holdout from the original dataset. Phase 1 v2 and Phase 2 were tested on a 312-image holdout from a much more diverse merged dataset (2,083 images).
+## Metric definitions
+- **mAP@50:** mean average precision at IoU 0.50. Measures whether potholes are found.
+- **mAP@50:95:** averaged over IoU 0.50–0.95. Measures how tightly boxes or masks fit.
+- **Recall:** share of real potholes found.
 
-## Phase-by-Phase Comparison Table
+## Results by phase
 
-| Phase | Model Architecture | Evaluation Dataset | mAP@50 | mAP@50:95 | Recall | Key Milestone |
-|-------|--------------------|--------------------|---------|-----------|--------|---------------|
-| **Phase 1 v1** | YOLOv8n (BBox) | 66 images (VOC converted) | 0.770 | 0.494 | 0.662 | Established detection baseline |
-| **Phase 1 v2** | YOLOv8n (BBox) | 312 images (Merged D40) | 0.950 | 0.700 | 0.860 | Solved low recall via dataset expansion |
-| **Phase 2** | YOLOv8n-Seg (Mask) | PothRGBD Segmented Set | 0.908 (Mask) | 0.592 (Mask) | 0.890 | Pixel-perfect area extraction |
+| Phase | Model | Evaluated on | mAP@50 | mAP@50:95 | Recall |
+|---|---|---|---|---|---|
+| Phase 1 v1 | YOLOv8n | andrewmvd 67-image held-out test split | 0.771 | 0.477 | 0.677 |
+| Phase 1 v2 | YOLOv8n | 5-fold CV on 1,986 merged images (mean) | **0.731** | **0.432** | **0.642** |
+| Phase 1 v2 | YOLOv8n | ~~v1 test split~~ | ~~0.954~~ | ~~0.704~~ | ~~0.858~~ |
+| Phase 2 | YOLOv8n-seg (mask) | PothRGBD 100-image test split (in-domain) | 0.908 | 0.592 | 0.884 |
 
-## Honest Failure-Mode Analysis
+**The struck-out row is invalid:** the v1 test photos are part of the v2 training pool (as chitholian's higher-resolution copies). v1 and v2 rows use different evaluation sets and are not directly comparable.
 
-1. **The "Background-Distortion" Geometric Failure (Phase 1)**
-   - **Issue:** Using simple bounding boxes for severity calculation inherently includes non-damaged road surface. For diagonally oriented or highly irregular potholes, the bounding box overestimates the damaged area by up to 40%. 
-   - **Resolution:** This failure mode motivated the transition to Phase 2 (Instance Segmentation) to calculate exact pixel area.
-
-2. **The "Overly Conservative" Detector (Phase 1 v1)**
-   - **Issue:** The initial model achieved high precision (0.86) but abysmal recall (0.66), missing roughly 1 in 3 potholes.
-   - **Diagnosis:** The training set of 665 images lacked environmental diversity (e.g., lighting, weather, varied asphalt textures). 
-   - **Resolution:** Merging 4 datasets to create a 2,083-image training corpus solved this, boosting recall to 0.86.
-
-3. **Localization Tightness on Distant Objects**
-   - **Issue:** Across all phases, the gap between `mAP@50` (high) and `mAP@50:95` (mediocre) indicates that while the model finds the potholes, it struggles to draw perfectly tight boundaries around them, particularly for distant or small potholes.
-   - **Impact:** This introduces a slight error margin in the final severity area calculation. Future work will investigate raising input resolution beyond 640x640 to resolve small-object boundary fuzziness.
+## Failure modes observed
+1. **Low recall:** about a third of potholes are missed (v2 recall 0.64).
+2. **Loose localisation:** the gap between mAP@50 and mAP@50:95 shows boxes and masks are found more reliably than they fit tightly. Small or distant potholes are hardest.
+3. **Cross-domain segmentation:** the segmenter, trained on two PothRGBD sessions, sometimes returns no mask on open-road crops, giving `UNKNOWN` severity.
