@@ -1,4 +1,4 @@
-Dataset downloaded to: /media/adityapachauri/second_drive/pothole_detection_data/cache/kagglehub/datasets/andrewmvd/pothole-detection/versions/1
+Dataset downloaded to: $POTHOLE_DATA_ROOT/cache/kagglehub/datasets/andrewmvd/pothole-detection/versions/1
 Exists: True Is dir: True
 
 FILE TYPE SUMMARY

@@ -101,7 +101,7 @@ early-stop point. Early stopping triggered because `mAP@50:95` plateaued for 20 
 ## Checkpoint
 
 `checkpoints/yolov8n_pothole_phase1_best.pt` (also at
-`/media/adityapachauri/second_drive/pothole_detection_data/checkpoints/yolov8n_pothole_phase1_best.pt`,
+`$POTHOLE_DATA_ROOT/checkpoints/yolov8n_pothole_phase1_best.pt`,
 copied automatically by `scripts/03_train_yolov8n.py`). This is the checkpoint Phase 2's
 detection stage should load.
 

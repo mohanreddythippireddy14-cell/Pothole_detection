@@ -6,9 +6,9 @@ numbers/evidence — this is the narrative that ties them together.
 
 ## 0. Setup
 
-- Project scaffolded at `/home/adityapachauri/Pothole_detection/` (code, small files).
+- Project scaffolded at `the repository root (`Pothole_detection/`)` (code, small files).
 - All datasets, checkpoints, training runs, and the Python venv placed on
-  `/media/adityapachauri/second_drive/pothole_detection_data/` — root disk had only
+  `$POTHOLE_DATA_ROOT/` — root disk had only
   ~2.2GB free at project start (later cleared by unrelated activity to ~18GB), so
   nothing large is stored there.
 - Kaggle API credentials configured (`~/.kaggle/kaggle.json`).
