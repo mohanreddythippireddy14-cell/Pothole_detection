@@ -72,7 +72,7 @@ ASTM D6433 (the real pavement-engineering pothole-severity standard). Area thres
 calibrated against a real severity-labeled dataset found on Kaggle
 (`idanbaru/annotated-potholes-with-severity-levels`); depth-escalation threshold
 calibrated from PothRGBD. See `context/SEVERITY_FUNCTION.md`. Full session history:
-`CHANGELOG.md`. Handwritten notes verbatim transcription:
+`docs/archive/CHANGELOG.md`. Handwritten notes verbatim transcription:
 `context/HANDWRITTEN_NOTES_TRANSCRIPTION.md`.
 
 **Not yet done**: fine-tuning Depth-Anything-V2 on PothRGBD; broadening segmentation
