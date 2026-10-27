@@ -1,39 +1,24 @@
 flowchart TD
-    %% Styling
     classDef ds fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
     classDef script fill:#fff3e0,stroke:#f57c00,stroke-width:2px;
-    classDef split fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
     classDef result fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
 
-    subgraph Data Sources
+    subgraph Sources
         direction LR
-        DS1[(andrewmvd)]:::ds
-        DS2[(v2-2022)]:::ds
-        DS3[(RDD2022)]:::ds
-        DS4[(PothRGBD)]:::ds
+        DS1[(chitholian 665<br/>= andrewmvd photos, 720x720)]:::ds
+        DS2[(rajdalsaniya 2,083 files<br/>671 original photos)]:::ds
+        DS3[(banilkumar Normal<br/>650 backgrounds)]:::ds
     end
 
-    subgraph Data Cleaning & Parsing
-        direction LR
-        DS1 --> CP[⚙️ Parse XML to YOLO txt]:::script
-        DS2 --> CP2[⚙️ Map 'pothole' string to ID 0]:::script
-        DS3 --> CP3[⚙️ Filter subset: D40 labels only]:::script
-        DS4 --> CP4[⚙️ Format mask polygons]:::script
-    end
+    DS1 --> P1[VOC XML to YOLO txt]:::script
+    DS2 --> P2[1 image per Roboflow group]:::script
+    DS3 --> P3[Empty label files]:::script
 
-    CP --> MERGE[🔄 Deduplication & Merge]:::script
-    CP2 --> MERGE
-    CP3 --> MERGE
-    
-    MERGE --> SPLIT{Strict 70/15/15 Split}:::split
-    
-    SPLIT -->|70%| TRAIN[(Training Set)]:::result
-    SPLIT -->|15%| VAL[(Validation Set)]:::result
-    SPLIT -->|15%| TEST[(Held-out Test Set)]:::result
-    
-    TRAIN -.->|⛔ No Leakage| TEST
-    VAL -.->|⛔ No Leakage| TEST
-    
-    TRAIN --> MODEL[🧠 YOLO Fine-Tuning]:::script
-    VAL --> MODEL
-    TEST --> EVAL[📊 Unbiased Quantitative Evaluation]:::result
+    P1 --> POOL[(1,986-image pool<br/>scripts/11)]:::result
+    P2 --> POOL
+    P3 --> POOL
+
+    POOL --> KF[5-fold CV<br/>scripts/12]:::script
+    KF --> M[Reported score:<br/>mAP@50 0.731 +/- 0.010]:::result
+    POOL --> FS[90/10 split<br/>scripts/13]:::script
+    FS --> FM[Final model checkpoint]:::result

@@ -19,11 +19,11 @@ flowchart LR
         D2 --> E2[🎨 YOLOv8n-Seg]:::phase2
         E2 --> F2[💠 Pixel Mask]:::component
         
-        A2 -.-> G2[📏 Depth-Anything-V2]:::phase2
-        G2 -.-> H2[🗺️ Depth Map]:::component
+        D2 --> G2[📏 Depth-Anything-V2]:::phase2
+        G2 --> H2[🗺️ Depth Map]:::component
         
         F2 --> I2[🎯 Masking / Overlay]:::component
-        H2 -.-> I2
+        H2 --> I2
         I2 --> J2[📊 Mask + Depth Feature Vector]:::component
         J2 --> K2[⚙️ ASTM D6433 Severity Engine]:::phase2
     end

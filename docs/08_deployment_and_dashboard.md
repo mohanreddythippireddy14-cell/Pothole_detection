@@ -1,13 +1,11 @@
-# 08. Deployment & Dashboard Integration
+# 08. Deployment & Dashboard Integration (planned)
 
-## Context
-This repository represents the ML ingestion engine. In production, this pipeline operates as a microservice asynchronously processing video frames or image uploads.
+**Status: not implemented.** This repository is the offline ML component. Today `scripts/10_full_pipeline.py` writes an annotated PNG per image and a markdown `REPORT.md` with per-pothole severity, confidence and features.
 
-## Data Flow
-Upon processing a frame, the engine outputs an annotated image (for visual confirmation) and a structured JSON payload containing:
-- Pothole count
-- Bounding box coordinates
-- Severity assignments (`LOW`, `MEDIUM`, `HIGH`)
-- Confidence scores
+## Intended integration
+- Expose the pipeline as a service that accepts photo uploads or video frames.
+- Return a structured JSON payload per image: pothole count, boxes, severity, confidence, features.
+- Store results in a geographic database (e.g. PostGIS) so a municipal dashboard can cluster duplicate reports of the same pothole by GPS location and rank repairs.
 
-This payload is pushed to the SIH Municipal Dashboard's PostgreSQL/PostGIS database, where it is aggregated geographically. If 10 citizens upload images of the same pothole, the dashboard clusters them based on GPS metadata, utilizing this ML engine to confirm the damage and assess its priority.
+## Prerequisites
+JSON output, blurring of number plates and faces, faster inference (ONNX/quantisation, since Depth-Anything-V2 is slow on edge devices), and a clean held-out evaluation. See `../FUTURE_ACTIONS.md`.
