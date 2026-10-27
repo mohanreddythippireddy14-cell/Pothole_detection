@@ -1,6 +1,6 @@
 # Inference Example
 
-This visual demonstrates the pipeline transitioning from a raw image frame to a processed, severity-annotated dashboard output.
+Raw photo vs. pipeline output (box colour = severity). This run used `--no-depth`, so severity comes from size only. The photo is from the training data and only illustrates the output format.
 
 | Raw Input (`potholes103_raw.png`) | Pipeline Output (`potholes103_annotated.png`) |
 |---|---|

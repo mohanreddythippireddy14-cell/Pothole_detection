@@ -1,3 +1,5 @@
+> **CORRECTION (2026-10-27):** the v2 "v1 test set" numbers below (mAP@50 0.95, recall 0.86) are **not valid**. The v1 test photos are part of the v2 training pool (chitholian contains the same 665 photos as andrewmvd), so the model had seen them. Use the 5-fold CV result (mAP@50 0.731 ± 0.010) until a clean held-out evaluation is done. See `FUTURE_ACTIONS.md`.
+
 > **UPDATE (Phase 1 v2, `context/PHASE1_V2_RESULTS.md`)**: findings #1, #2, #3, #5, #8
 > below were acted on — merged mega-dataset (1986 img, 4 sources, deduplicated),
 > `close_mosaic` fix, 5-fold CV, 650 background images added. Result on v1's original

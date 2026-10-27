@@ -1,14 +1,12 @@
-# 03. Phase 1: Bounding Box Baseline
+# 03. Phase 1: Detection
 
-## Methodology
-The project began by establishing a robust 2D object detection baseline using `YOLOv8n` (nano). The objective was to determine if standard bounding boxes could suffice for severity estimation based purely on 2D area (width $\times$ height).
+## v1 baseline
+YOLOv8n (COCO-pretrained) fine-tuned on andrewmvd (`scripts/03`): 100 epochs requested, early-stopped at 86. On the held-out 67-image test split: precision 0.794, recall 0.677, mAP@50 0.771, mAP@50:95 0.477.
 
-## Results
-After the dataset expansion (Phase 1 v2), the baseline model achieved:
-- **mAP@50:** 0.950
-- **Recall:** 0.860
+Two problems were found: recall was low, and Ultralytics' `close_mosaic` phase (mosaic augmentation switched off for the last epochs) never ran because early stopping fired first.
 
-## The Geometric Failure Mode
-While detection accuracy was exceptionally high, we discovered a fatal flaw in using bounding boxes for severity assessment. Potholes are inherently irregular and often oriented diagonally relative to the camera frame. A rectangular bounding box inevitably includes significant portions of non-damaged road surface. 
+## v2
+Trained on the 1,986-image merged dataset with `epochs=60, patience=25, close_mosaic=15` so the clean-image phase always runs. Result (5-fold CV): precision 0.781, recall 0.642, mAP@50 0.731, mAP@50:95 0.432. These validation folds include 650 background images and harder close-ups, so they are not directly comparable to the v1 test number.
 
-This "background distortion" led the heuristic engine to overestimate damaged area by up to 40%, rendering the severity ratings unusable for strict municipal triage. This necessitated the architectural shift to Phase 2.
+## Why boxes alone aren't enough for severity
+A bounding box includes undamaged road around irregular or diagonal potholes, so box area overstates damaged area. This motivated per-crop segmentation (Phase 2). The size of this effect has not been measured.
