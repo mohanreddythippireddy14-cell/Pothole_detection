@@ -1,0 +1,5 @@
+# Development and test tools (not needed to run the pipeline).
+-r requirements.txt
+pytest>=7.0
+black>=23.0
+flake8>=6.0
