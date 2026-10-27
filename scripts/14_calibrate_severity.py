@@ -7,10 +7,14 @@ Design rationale (see context/SEVERITY_FUNCTION.md for the full writeup):
     diameter or depth available at inference time on an arbitrary uploaded photo (no
     camera calibration), so we can't reproduce the ASTM table's literal mm bins -- but
     we CAN reproduce its two-factor STRUCTURE using scale-independent proxies:
-      * area factor:  relative_area (mask_pixels / full_image_pixels), thresholds
-        calibrated empirically against idanbaru/annotated-potholes-with-severity-levels
-        (717 images, human/semi-automated minor/medium/major labels -- a real, if
-        imperfect, severity-labeled dataset; see calibration below).
+      * area factor:  relative_area, thresholds calibrated empirically against
+        idanbaru/annotated-potholes-with-severity-levels (717 images, human/semi-
+        automated minor/medium/major labels -- a real, if imperfect, severity-labeled
+        dataset; see calibration below). idanbaru only provides bounding boxes, so
+        the thresholds are fitted on BOX area (box_w * box_h / image area), while
+        scripts/10 applies them to segmentation-MASK area (smaller than the box).
+        Thresholds are also fitted and scored on the same boxes (no hold-out), so
+        the reported balanced accuracy is in-sample. Both tracked in FUTURE_ACTIONS.md.
       * depth factor: a "steepness" ratio (depth signal / pothole pixel extent),
         analogous to ASTM's depth-for-a-given-diameter logic, computed on
         Depth-Anything-V2's own output scale (uncalibrated relative units) so it's
@@ -40,7 +44,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import _py311_compat  # noqa: F401
-from config import KAGGLEHUB_CACHE, CONTEXT_DIR  # noqa: E402
+from config import KAGGLEHUB_CACHE, CONTEXT_DIR, ensure_dirs  # noqa: E402
 
 os.environ.setdefault("KAGGLEHUB_CACHE", str(KAGGLEHUB_CACHE))
 
@@ -169,6 +173,7 @@ def calibrate_depth_steepness(n_samples=60, seed=1):
 
 
 def main():
+    ensure_dirs()
     area_cal = calibrate_area_thresholds()
     depth_cal = calibrate_depth_steepness()
     calibration = {**area_cal, **depth_cal}

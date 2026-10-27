@@ -13,7 +13,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from config import KAGGLEHUB_CACHE, YOLO_DATASET_DIR  # noqa: E402
+from config import KAGGLEHUB_CACHE, YOLO_DATASET_DIR, ensure_dirs  # noqa: E402
 
 os.environ.setdefault("KAGGLEHUB_CACHE", str(KAGGLEHUB_CACHE))
 
@@ -80,6 +80,7 @@ def process_split(pairs, split, yolo_dir: Path) -> int:
 
 
 def main():
+    ensure_dirs()
     source_dir = Path(kagglehub.dataset_download("andrewmvd/pothole-detection"))
     print("Source dataset:", source_dir)
     print("YOLO dataset target:", YOLO_DATASET_DIR)

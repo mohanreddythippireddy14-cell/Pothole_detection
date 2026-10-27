@@ -67,6 +67,8 @@ metrics.json
 wandb/
 .ultralytics/
 *.json
+# needed at runtime by scripts/10_full_pipeline.py
+!context/severity_calibration.json
 !checkpoints/
 data/
 datasets/

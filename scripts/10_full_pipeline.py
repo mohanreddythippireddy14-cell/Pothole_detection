@@ -11,11 +11,12 @@ Matches the "Final Architecture" diagram in the handwritten notes (context/ARCHI
 import argparse
 import json
 import sys
+import warnings
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import _py311_compat  # noqa: F401
-from config import CHECKPOINTS_DIR, CONTEXT_DIR  # noqa: E402
+from config import CHECKPOINTS_DIR, CONTEXT_DIR, ensure_dirs  # noqa: E402
 
 import cv2
 import numpy as np
@@ -35,6 +36,10 @@ SEG_WEIGHTS = CHECKPOINTS_DIR / "yolov8n_seg_pothrgbd_best.pt"
 #     minor/medium/major-labeled boxes). Area-only reaches only ~52% balanced accuracy
 #     (33% = chance for 3 classes) -- informative but far from sufficient alone, which
 #     is why depth is now a real second factor rather than diagnostic-only.
+#     NOTE: those thresholds were fitted on BOUNDING-BOX area (the only geometry the
+#     idanbaru labels provide) but are applied below to segmentation-MASK area, which
+#     is smaller than the box for the same pothole -- so area scores lean low. Known
+#     limitation, tracked in FUTURE_ACTIONS.md.
 #   - depth factor: a "steepness" ratio (depth-vs-road-plane signal / pothole pixel
 #     extent) on Depth-Anything-V2's own uncalibrated relative-depth scale, with an
 #     escalation threshold (90th percentile) calibrated from a PothRGBD sample. If a
@@ -42,10 +47,18 @@ SEG_WEIGHTS = CHECKPOINTS_DIR / "yolov8n_seg_pothrgbd_best.pt"
 #     the same "depth pushes severity up for a given size" logic ASTM uses, without
 #     pretending we have metric depth. See context/SEVERITY_FUNCTION.md.
 _calib_path = CONTEXT_DIR / "severity_calibration.json"
-_CALIBRATION = json.loads(_calib_path.read_text()) if _calib_path.exists() else {
-    "area_threshold_low_medium": 0.01, "area_threshold_medium_high": 0.05,
-    "depth_steepness_escalation_threshold": float("inf"),
-}
+if _calib_path.exists():
+    _CALIBRATION = json.loads(_calib_path.read_text())
+else:
+    warnings.warn(
+        f"{_calib_path} not found -- falling back to uncalibrated area thresholds and "
+        "DISABLING depth escalation. Run scripts/14_calibrate_severity.py to create it.",
+        stacklevel=1,
+    )
+    _CALIBRATION = {
+        "area_threshold_low_medium": 0.01, "area_threshold_medium_high": 0.05,
+        "depth_steepness_escalation_threshold": float("inf"),
+    }
 SEVERITY_AREA_THRESHOLDS = (
     _CALIBRATION["area_threshold_low_medium"], _CALIBRATION["area_threshold_medium_high"]
 )
@@ -84,9 +97,9 @@ class SeverityPipeline:
                 "relative_area": relative_area, "mask_found": True}
 
     def _depth_stats(self, image_rgb: np.ndarray, mask: np.ndarray) -> dict:
-        """Relative-depth-inside-pothole-vs-surrounding-road-plane, in DA-V2's own units
-        after a per-image affine fit against a road-plane proxy (image border ring,
-        since we have no ground truth depth at inference time on new images)."""
+        """Relative-depth-inside-pothole-vs-surrounding-road-plane, in DA-V2's own units.
+        The road level is the median of a ring of pixels just outside the mask (no
+        affine fit -- there is no ground-truth depth at inference time on new images)."""
         from PIL import Image as PILImage
 
         result = self.depth_pipe(PILImage.fromarray(image_rgb))
@@ -151,15 +164,20 @@ class SeverityPipeline:
             if crop.size == 0:
                 continue
 
-            seg_result = self.segmenter.predict(crop, conf=0.25, device=self.device, verbose=False)[0]
+            # retina_masks=True makes Ultralytics return masks at the crop's own resolution;
+            # without it masks.data is at the letterboxed inference size (incl. stride
+            # padding), and resizing that straight to the crop shifts the mask slightly.
+            seg_result = self.segmenter.predict(crop, conf=0.25, device=self.device, verbose=False,
+                                                retina_masks=True)[0]
             if seg_result.masks is None or len(seg_result.masks.data) == 0:
                 mask_crop = np.zeros(crop.shape[:2], dtype=np.uint8)
             else:
                 areas = [m.sum().item() for m in seg_result.masks.data]
                 best_idx = int(np.argmax(areas))
-                mask_full = seg_result.masks.data[best_idx].cpu().numpy()
-                mask_crop = cv2.resize(mask_full, (crop.shape[1], crop.shape[0]),
-                                        interpolation=cv2.INTER_NEAREST).astype(np.uint8)
+                mask_crop = (seg_result.masks.data[best_idx].cpu().numpy() > 0.5).astype(np.uint8)
+                if mask_crop.shape != crop.shape[:2]:  # defensive; retina masks should match
+                    mask_crop = cv2.resize(mask_crop, (crop.shape[1], crop.shape[0]),
+                                           interpolation=cv2.INTER_NEAREST)
 
             geometry = self._geometry_from_mask(mask_crop, image_bgr.shape[:2])
 
@@ -210,6 +228,7 @@ class SeverityPipeline:
 
 
 def main():
+    ensure_dirs()
     parser = argparse.ArgumentParser()
     parser.add_argument("--images", nargs="+", required=True)
     parser.add_argument("--out-dir", type=str, default=str(CONTEXT_DIR / "phase2_pipeline_demo"))
