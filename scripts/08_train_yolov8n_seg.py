@@ -10,13 +10,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import _py311_compat  # noqa: F401
-from config import DATASETS_DIR, RUNS_DIR, CHECKPOINTS_DIR  # noqa: E402
+from config import DATASETS_DIR, RUNS_DIR, CHECKPOINTS_DIR, ensure_dirs  # noqa: E402
 
 from ultralytics import YOLO
 import torch
 
 
 def main():
+    ensure_dirs()
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=100)
     parser.add_argument("--imgsz", type=int, default=640)

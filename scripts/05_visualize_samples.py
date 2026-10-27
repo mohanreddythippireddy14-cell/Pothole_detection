@@ -6,17 +6,25 @@ Saves PNGs instead of plt.show() (no notebook display here).
 """
 
 import argparse
+import math
 import random
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import _py311_compat  # noqa: F401 - must run before torch
-from config import YOLO_DATASET_DIR, CONTEXT_DIR  # noqa: E402
+from config import YOLO_DATASET_DIR, CONTEXT_DIR, ensure_dirs  # noqa: E402
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from PIL import Image
+
+
+def make_grid(n: int, cols: int = 3):
+    """A rows x cols grid with room for n panels (at least one row)."""
+    rows = max(1, math.ceil(n / cols))
+    fig, axes = plt.subplots(rows, cols, figsize=(5 * cols, 5 * rows), squeeze=False)
+    return fig, axes.flatten()
 
 
 def plot_training_samples(n=6, seed=0, out_path=None):
@@ -26,8 +34,7 @@ def plot_training_samples(n=6, seed=0, out_path=None):
     random.seed(seed)
     samples = random.sample(train_images, min(n, len(train_images)))
 
-    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-    axes = axes.flatten()
+    fig, axes = make_grid(len(samples))
 
     for ax, image_path in zip(axes, samples):
         image = Image.open(image_path)
@@ -81,8 +88,7 @@ def plot_predictions(weights: str, n=6, conf=0.25, out_path=None):
     )
 
     num_to_show = min(n, len(results))
-    fig, axes = plt.subplots(2, 3, figsize=(15, 10))
-    axes = axes.flatten()
+    fig, axes = make_grid(num_to_show)
     for i in range(num_to_show):
         annotated = results[i].plot()
         axes[i].imshow(annotated[..., ::-1])
@@ -98,6 +104,7 @@ def plot_predictions(weights: str, n=6, conf=0.25, out_path=None):
 
 
 if __name__ == "__main__":
+    ensure_dirs()
     parser = argparse.ArgumentParser()
     parser.add_argument("--weights", type=str, default=None, help="if given, also plot test predictions")
     parser.add_argument("--n", type=int, default=6)

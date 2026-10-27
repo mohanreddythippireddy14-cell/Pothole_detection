@@ -17,12 +17,13 @@ both over the whole valid-depth region and restricted to the annotated pothole m
 
 import os
 import random
+import re
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import _py311_compat  # noqa: F401
-from config import KAGGLEHUB_CACHE, CONTEXT_DIR  # noqa: E402
+from config import KAGGLEHUB_CACHE, CONTEXT_DIR, ensure_dirs  # noqa: E402
 
 os.environ.setdefault("KAGGLEHUB_CACHE", str(KAGGLEHUB_CACHE))
 
@@ -56,6 +57,7 @@ def fit_affine(pred: np.ndarray, gt: np.ndarray):
 
 
 def main(n_samples=40, seed=0):
+    ensure_dirs()
     from transformers import pipeline
 
     device = 0 if torch.cuda.is_available() else -1
@@ -68,10 +70,7 @@ def main(n_samples=40, seed=0):
 
     root = Path(kagglehub.dataset_download("mahyeks/pothrgbd-rgb-and-depth-images-of-potholes"))
     images = sorted(root.rglob("*.jpg"))
-    depths = {p.stem.replace("_depth", ""): p for p in root.rglob("*.npy")}
     txts = {p.stem: p for p in root.rglob("*.txt")}
-
-    import re
 
     def ts(p):
         m = re.search(r"(\d{8}_\d{6})", p.name)

@@ -12,7 +12,7 @@ from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
-from config import KAGGLEHUB_CACHE, CONTEXT_DIR  # noqa: E402
+from config import KAGGLEHUB_CACHE, CONTEXT_DIR, ensure_dirs  # noqa: E402
 
 os.environ.setdefault("KAGGLEHUB_CACHE", str(KAGGLEHUB_CACHE))
 
@@ -46,6 +46,7 @@ def parse_voc_annotation(xml_path: Path) -> dict:
 
 
 def main():
+    ensure_dirs()
     log_lines = []
 
     def log(*args):
@@ -102,8 +103,10 @@ def main():
     )
     log("\nAnnotation files found:", len(annotation_files))
 
+    # only the VOC .xml files carry boxes; .txt/.json are counted above but not parsed
+    xml_files = [p for p in annotation_files if p.suffix.lower() == ".xml"]
     annotation_records = []
-    for xml_path in annotation_files:
+    for xml_path in xml_files:
         try:
             ann = parse_voc_annotation(xml_path)
             for obj in ann["objects"]:

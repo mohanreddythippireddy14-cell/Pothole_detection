@@ -11,7 +11,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 import _py311_compat  # noqa: F401
-from config import DATASETS_DIR, RUNS_DIR, CHECKPOINTS_DIR  # noqa: E402
+from config import DATASETS_DIR, RUNS_DIR, CHECKPOINTS_DIR, ensure_dirs  # noqa: E402
+from fs_utils import link_or_copy  # noqa: E402
 
 import numpy as np
 import yaml
@@ -24,6 +25,7 @@ FINAL_DIR = DATASETS_DIR / "pothole_combined_v2_final90_10"
 
 
 def main():
+    ensure_dirs()
     manifest = np.array((COMBINED_DIR / "manifest.txt").read_text().splitlines())
     kf = KFold(n_splits=10, shuffle=True, random_state=42)
     train_idx, val_idx = next(kf.split(manifest))  # first split only = 90/10
@@ -36,8 +38,8 @@ def main():
         for stem in manifest[idx]:
             img_src = next((COMBINED_DIR / "images").glob(f"{stem}.*"))
             lbl_src = COMBINED_DIR / "labels" / f"{stem}.txt"
-            (FINAL_DIR / "images" / split / img_src.name).symlink_to(img_src)
-            (FINAL_DIR / "labels" / split / lbl_src.name).symlink_to(lbl_src)
+            link_or_copy(img_src, FINAL_DIR / "images" / split / img_src.name)
+            link_or_copy(lbl_src, FINAL_DIR / "labels" / split / lbl_src.name)
     print(f"train={len(train_idx)} val={len(val_idx)}")
 
     data_yaml = FINAL_DIR / "data.yaml"
