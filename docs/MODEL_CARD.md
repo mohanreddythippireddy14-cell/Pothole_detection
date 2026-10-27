@@ -4,7 +4,7 @@
 - **Architecture:** Ensemble Pipeline (YOLOv8n + YOLOv8n-Seg + Depth-Anything-V2)
 - **Task:** Object Detection, Instance Segmentation, Monocular Depth Estimation
 - **Framework:** PyTorch, Ultralytics, Transformers
-- **Primary Developer:** Aditya Pachauri
+- **Primary Developer:** Mohan Reddy Tippireddy
 
 ## Intended Use
 - **Primary Use Case:** Automated visual inspection of road surfaces from vehicle-mounted cameras to triage municipal repair schedules.

@@ -1,4 +1,4 @@
-PothRGBD location: /media/adityapachauri/second_drive/pothole_detection_data/cache/kagglehub/datasets/mahyeks/pothrgbd-rgb-and-depth-images-of-potholes/versions/1
+PothRGBD location: $POTHOLE_DATA_ROOT/cache/kagglehub/datasets/mahyeks/pothrgbd-rgb-and-depth-images-of-potholes/versions/1
 Exists: True
 
 FILE TYPE COUNTS

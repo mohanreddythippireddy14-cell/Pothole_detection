@@ -8,7 +8,7 @@ logged in `context/`.
 ## Storage layout (root disk only has ~2.2GB free — DO NOT write datasets/checkpoints there)
 
 All datasets, model checkpoints, and training runs live on the second drive:
-`/media/adityapachauri/second_drive/pothole_detection_data/`
+`$POTHOLE_DATA_ROOT/`
 ```
 pothole_detection_data/
 ├── datasets/     # kagglehub-downloaded datasets (raw)
@@ -19,7 +19,7 @@ pothole_detection_data/
 ```
 This is a scratch/experiment area — datasets get deleted after training+validation is
 complete and results are documented (per user instruction). Code, configs, and docs live
-in `/home/adityapachauri/Pothole_detection/` (this repo) which stays on root but is small
+in `the repository root (`Pothole_detection/`)` (this repo) which stays on root but is small
 (no large binaries checked in).
 
 ## Architecture (from notes, see context/ARCHITECTURE.md)
@@ -80,7 +80,7 @@ training data beyond PothRGBD's 2 capture dates; end-to-end severity accuracy
 measurement (only the area-factor-in-isolation was measured against idanbaru).
 
 **Cleanup reminder (per user instruction)**: datasets on the second drive
-(`/media/adityapachauri/second_drive/pothole_detection_data/datasets/`,
+(`$POTHOLE_DATA_ROOT/datasets/`,
 `cache/kagglehub/`) should be deleted once all training/validation is finished and
 results are confirmed satisfactory — checkpoints and context/ docs are the durable
 artifacts, the raw datasets are not.
